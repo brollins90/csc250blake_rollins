@@ -40,7 +40,7 @@ namespace HashTable
                 hasher.Add("J", 3);
                 Console.WriteLine("failed");
             }
-            catch (Exception)
+            catch (Exception e)
             { }
 
             foreach (var h in hasher) { Console.WriteLine(h.Key + " " + h.Value); }
@@ -50,7 +50,7 @@ namespace HashTable
             hasher.Remove("J");
             hasher["T"] = 100;
             try { hasher["TJ"] = 100; }
-            catch (Exception) { }
+            catch (Exception e) { }
 
             foreach (var h in hasher) { Console.WriteLine(h.Key + " " + h.Value); }
 

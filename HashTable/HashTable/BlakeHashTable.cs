@@ -7,22 +7,28 @@ using System.Threading.Tasks;
 namespace HashTable
 {
 
-    public class Bucket<TKey, TValue>
+    public class KeyValuePair<TKey, TValue>
     {
-        public TKey Key { get; private set; }
-        public TValue Value { get; private set; }
-        public int HashVal { get; private set; }
-
-        public Bucket(TKey k, TValue v, int h)
-        {
-            this.Key = k;
-            this.Value = v;
-            this.HashVal = h;
-        }
+        public TKey Key { get; set; }
+        public TValue Value { get; set; }
     }
     
     public class BlakeHashTable<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
+
+        private class Bucket<TKey, TValue>
+        {
+            public TKey Key { get; private set; }
+            public TValue Value { get; private set; }
+            public int HashVal { get; private set; }
+
+            public Bucket(TKey k, TValue v, int h)
+            {
+                this.Key = k;
+                this.Value = v;
+                this.HashVal = h;
+            }
+        }
 
         private Bucket<TKey,TValue>[] _Buckets;
         public int Count { get; set; }
@@ -207,10 +213,5 @@ namespace HashTable
         {
             return GetEnumerator();
         }
-    }
-    public class KeyValuePair<TKey, TValue>
-    {
-        public TKey Key { get; set; }
-        public TValue Value { get; set; }
     }
 }
