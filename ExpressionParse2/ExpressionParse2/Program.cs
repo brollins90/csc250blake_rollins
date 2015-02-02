@@ -15,6 +15,18 @@ namespace ExpressionParse2
         static void Main(string[] args)
         {
 
+            TestInfixToPostfix("1 + 2 * 3 - 4", "1 2 3 * + 4 -");
+            TestInfixToPostfix("5 * 2", "5 2 *");
+            TestInfixToPostfix("5 + 2", "5 2 +");
+            TestInfixToPostfix("5 / 5", "5 5 /");
+            TestInfixToPostfix("5 + 2 * 3 - 4 + 6 / 2", "5 2 3 * + 4 - 6 2 / +");
+            TestInfixToPostfix("5 * 2 * 3 * 4 * 6 * 2", "5 2 * 3 * 4 * 6 * 2 *");
+            TestInfixToPostfix("5 + 2 + 3 + 4 + 6 + 2", "5 2 + 3 + 4 + 6 + 2 +");
+            TestInfixToPostfix("3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4", "3 1 + 9 + 3 1 / - 2 3 * - 4 2 / 2 * 4 / +");
+
+
+
+
             TestIt("5 * 2", 10);
             TestIt("5 + 5", 10);
             TestIt("5 / 5", 1);
@@ -28,6 +40,17 @@ namespace ExpressionParse2
             TestIt("8 / 4 / 2 * 2", 8 / 4 / 2 * 2);
             TestIt("8 / 4 * 2 / 2", 8 / 4 * 2 / 2);
             TestIt("3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4", 3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4);
+
+            TestIt("3 + 1 + 9 - 3 / 1", 3 + 1 + 9 - 3 / 1);
+            TestIt("2 * 3 + 4 / 2 * 2 / 4", 2 * 3 + 4 / 2 * 2 / 4);
+            TestIt("3 + 4 / 2 * 2 / 4", 3 + 4 / 2 * 2 / 4);
+            TestIt("3 + 4 / 2 * 2", 3 + 4 / 2 * 2);
+            TestIt("3 + 4 / 2", 3 + 4 / 2);
+            TestIt("4 / 2 * 2 / 4", 4 / 2 * 2 / 4);
+
+
+            Console.WriteLine("Press a key to continue");
+            Console.ReadKey();
         }
 
         private static void TestIt(string s1, double expected)
@@ -37,14 +60,78 @@ namespace ExpressionParse2
             Console.Write(s1 + " = " + answer + " (ex: " + expected + ")");
             if (answer == expected)
             {
-                Console.WriteLine(" YAY");
+                var t = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine(" Pass");
+                Console.ForegroundColor = t;
             }
             else
             {
-                Console.WriteLine(" BOO");
+                var t = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(" Fail");
+                Console.ForegroundColor = t;
             }
         }
 
+        private static void TestInfixToPostfix(string s1, string expected)
+        {
+
+            string actual = InfixToPostfix(s1);
+            Console.Write(s1 + " => " + actual + " (ex: " + expected + ")");
+            if (expected.Equals(actual))
+            {
+                var t = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine(" Pass");
+                Console.ForegroundColor = t;
+            }
+            else
+            {
+                var t = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(" Fail");
+                Console.ForegroundColor = t;
+            }
+        }
+
+        public static string InfixToPostfix(string infix)
+        {
+            Stack<string> stack = new Stack<string>();
+            string postfix = "";
+
+            
+            string[] parts = infix.Split(' ');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string cur = parts[i];
+                int opval = OpVal(cur);
+
+                if (opval == 0) // here we have an operand
+                {
+                    postfix += cur + " ";
+                }
+                else // here we have an operator
+                {
+                    if (stack.Count != 0)
+                    {
+                        while (stack.Count > 0 && opval >= OpVal(stack.Peek()))
+                        {
+                            postfix += stack.Pop() + " ";
+                        }
+                    }
+                    stack.Push(cur);
+                }
+            }
+
+            // put what is left in the stack on the output string
+            while (stack.Count > 0)
+            {
+                postfix += stack.Pop() + " ";
+            }
+
+            return postfix.Substring(0,postfix.Length-1);
+        }
 
         private static Node Evaluate(string expression)
         {
@@ -64,7 +151,8 @@ namespace ExpressionParse2
             
             for (int i = 0; i < parts.Length; i++)
             {
-                Node n = Evaluate(parts[i]);
+                string thisPart = parts[i];
+                Node n = Evaluate(thisPart);
                 if (newTree.Top == null)
                 {
                     newTree.Top = n;
@@ -95,6 +183,7 @@ namespace ExpressionParse2
                             newTree.Top = n;
                         }
                         n.Left = newTree.Right;
+                        n.Left.Parent = n;
                         newTree.Right = n;
                     }}
                     else // add to bottom
@@ -108,26 +197,26 @@ namespace ExpressionParse2
             return newTree.Top;
         }
 
-        private static int OpVal(Node s)
+        private static int OpVal(string s)
         {
             if (s == null)
             {
                 return -1;
             }
             else
-                if (s.Value.Equals("+"))
+                if (s.Equals("+"))
                 {
                     return 2;
                 }
-                else if (s.Value.Equals("-"))
+                else if (s.Equals("-"))
                 {
                     return 2;
                 }
-                else if (s.Value.Equals("*"))
+                else if (s.Equals("*"))
                 {
                     return 1;
                 }
-                else if (s.Value.Equals("/"))
+                else if (s.Equals("/"))
                 {
                     return 1;
                 }
@@ -135,6 +224,11 @@ namespace ExpressionParse2
                 {
                     return 0;
                 }
+        }
+
+        private static int OpVal(Node s)
+        {
+            return OpVal(s.Value);
         }
 
         private static double Solve(Node top)
@@ -176,6 +270,11 @@ namespace ExpressionParse2
             public Node Right;
             public string Value;
             public Node() { }
+
+            public override string ToString()
+            {
+                return this.Value;
+            }
         }
 
     }
