@@ -14,17 +14,32 @@ namespace HashTable
 
             bht.Add("one", 1);
             bht.Add("two", 2);
-            PrintIt(bht);
             bht.Add("three", 3);
             bht.Add("four", 4);
+            try
+            {
+                bht.Add("four", 4);
+                Console.WriteLine("Fail");
+            }
+            catch (Exception e) { }
+
+            bht["four"] = 4;
+
             PrintIt(bht);
             bht.Remove("four");
+            PrintIt(bht);
+            bht["four"] = 4;
             PrintIt(bht);
 
             bht["three"] = 3;
             bht["newIndex"] = 11;
             bht["asd"] = 11;
-            //bht[null] = "newItem";
+            try
+            {
+                bht[null] = 7;
+                Console.WriteLine("Fail");
+            }
+            catch (Exception e) { }
             bht["newIndex3"] = default(int);
 
             PrintIt(bht);
