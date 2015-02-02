@@ -22,18 +22,19 @@ namespace ExpressionParse2
             TestIt("5 * 2 * 3 * 4 * 6 * 2", 1440);
             TestIt("5 + 2 + 3 + 4 + 6 + 2", 22);
             TestIt("1 + 2 * 3 / 4 - 5", -2.5);
-            TestIt("1 + 2 * 3", 7);
-            TestIt("1 + 2 * 3", 7);
-            TestIt("8 / 4 / 2", 1);
-            TestIt("8 / 4 / 2 * 2", 2);
-            TestIt("8 / 4 * 2 / 2", 2);
+            TestIt("1 + 2 * 3", 1 + 2 * 3);
+            TestIt("1 + 2 * 3", 1 + 2 * 3);
+            TestIt("8 / 4 / 2", 8 / 4 / 2);
+            TestIt("8 / 4 / 2 * 2", 8 / 4 / 2 * 2);
+            TestIt("8 / 4 * 2 / 2", 8 / 4 * 2 / 2);
+            TestIt("3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4", 3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4);
         }
 
         private static void TestIt(string s1, double expected)
         {
 
             double answer = Solve(Evaluate(s1));
-            Console.Write(s1 + " = " + answer);
+            Console.Write(s1 + " = " + answer + " (ex: " + expected + ")");
             if (answer == expected)
             {
                 Console.WriteLine(" YAY");
