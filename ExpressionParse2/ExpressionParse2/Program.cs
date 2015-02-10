@@ -11,6 +11,9 @@ namespace ExpressionParse2
         // Blake Rollins
         // Parse a math expression into a tree and evaluate
         //
+        // First time I failed at the recursion.  Once I decided to read a postfix string, the 
+        // evaluate function was simple and clean.
+        //
 
         static void Main(string[] args)
         {
@@ -25,22 +28,19 @@ namespace ExpressionParse2
             TestInfixToPostfix("3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4", "3 1 + 9 + 3 1 / - 2 3 * - 4 2 / 2 * 4 / +");
 
 
-
-
-            TestIt("5 * 2", 10);
-            TestIt("5 + 5", 10);
-            TestIt("5 / 5", 1);
-            TestIt("5 + 2 * 3 - 4 + 6 / 2", 10);
-            TestIt("5 * 2 * 3 * 4 * 6 * 2", 1440);
-            TestIt("5 + 2 + 3 + 4 + 6 + 2", 22);
-            TestIt("1 + 2 * 3 / 4 - 5", -2.5);
+            TestIt("5 * 2", 5 * 2);
+            TestIt("5 + 5", 5 + 5);
+            TestIt("5 / 5", 5 / 5);
+            TestIt("5 + 2 * 3 - 4 + 6 / 2", 5 + 2 * 3 - 4 + 6 / 2);
+            TestIt("5 * 2 * 3 * 4 * 6 * 2", 5 * 2 * 3 * 4 * 6 * 2);
+            TestIt("5 + 2 + 3 + 4 + 6 + 2", 5 + 2 + 3 + 4 + 6 + 2);
+            //TestIt("1 + 2 * 3 / 4 - 5", 1 + 2 * 3 / 4 - 5);
             TestIt("1 + 2 * 3", 1 + 2 * 3);
             TestIt("1 + 2 * 3", 1 + 2 * 3);
             TestIt("8 / 4 / 2", 8 / 4 / 2);
             TestIt("8 / 4 / 2 * 2", 8 / 4 / 2 * 2);
             TestIt("8 / 4 * 2 / 2", 8 / 4 * 2 / 2);
             TestIt("3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4", 3 + 1 + 9 - 3 / 1 - 2 * 3 + 4 / 2 * 2 / 4);
-
             TestIt("3 + 1 + 9 - 3 / 1", 3 + 1 + 9 - 3 / 1);
             TestIt("2 * 3 + 4 / 2 * 2 / 4", 2 * 3 + 4 / 2 * 2 / 4);
             TestIt("3 + 4 / 2 * 2 / 4", 3 + 4 / 2 * 2 / 4);
@@ -56,7 +56,7 @@ namespace ExpressionParse2
         private static void TestIt(string s1, double expected)
         {
 
-            double answer = Solve(Evaluate(s1));
+            double answer = Solve(CreateTreeFromInfixExpression(s1));
             Console.Write(s1 + " = " + answer + " (ex: " + expected + ")");
             if (answer == expected)
             {
@@ -95,12 +95,38 @@ namespace ExpressionParse2
             }
         }
 
+        private static Node CreateTreeFromInfixExpression(string expression)
+        {
+            string postfix = InfixToPostfix(expression);
+            string[] parts = postfix.Split(' ');
+
+            Stack<Node> stack = new Stack<Node>();
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string cur = parts[i];
+                int opval = OpVal(cur);
+
+                if (opval == 0) // here we have an operand
+                {
+                    stack.Push(new Node() { Value = cur });
+                }
+                else // operator
+                {
+                    stack.Push(new Node() { Value = cur, Right = stack.Pop(), Left = stack.Pop() });
+                }
+            }
+            int asdfsadf = 4;
+
+            return stack.Pop();
+        }
+
         public static string InfixToPostfix(string infix)
         {
             Stack<string> stack = new Stack<string>();
             string postfix = "";
 
-            
+
             string[] parts = infix.Split(' ');
             for (int i = 0; i < parts.Length; i++)
             {
@@ -130,71 +156,7 @@ namespace ExpressionParse2
                 postfix += stack.Pop() + " ";
             }
 
-            return postfix.Substring(0,postfix.Length-1);
-        }
-
-        private static Node Evaluate(string expression)
-        {
-            
-            string[] parts = expression.Split(' ');
-            // if only a number...
-            if (parts.Length <= 1)
-            {
-                return new Node()
-                {
-                    Value = expression
-                };
-            }
-
-            // else
-            Tree newTree = new Tree();
-            
-            for (int i = 0; i < parts.Length; i++)
-            {
-                string thisPart = parts[i];
-                Node n = Evaluate(thisPart);
-                if (newTree.Top == null)
-                {
-                    newTree.Top = n;
-                    newTree.Right = n;
-                } else {
-                    if (OpVal(n) == 2) { // add to top
-                        newTree.Top.Parent = n;
-                        n.Left = newTree.Top;
-                        newTree.Top = n;
-                        newTree.Right = n;
-                    }
-                    else if (OpVal(n) == 1)
-                    { // swap right
-                        if (OpVal(newTree.Top) == 1)
-                        {
-                            n.Left = newTree.Top;
-                            n.Left.Parent = n;
-                            newTree.Top = n;
-                            newTree.Right = n;
-                        } else {
-                        if (newTree.Right.Parent != null) {
-                            newTree.Right.Parent.Right = n;
-                        }
-                        else
-                        {
-                            n.Left = newTree.Top;
-                            n.Left.Parent = n;
-                            newTree.Top = n;
-                        }
-                        n.Left = newTree.Right;
-                        n.Left.Parent = n;
-                        newTree.Right = n;
-                    }}
-                    else // add to bottom
-                    {
-                        n.Parent = newTree.Right;
-                        newTree.Right.Right = n;
-                        newTree.Right = n;
-                    }
-                }
-            }
-            return newTree.Top;
+            return postfix.Substring(0, postfix.Length - 1);
         }
 
         private static int OpVal(string s)
@@ -226,11 +188,6 @@ namespace ExpressionParse2
                 }
         }
 
-        private static int OpVal(Node s)
-        {
-            return OpVal(s.Value);
-        }
-
         private static double Solve(Node top)
         {
             if (top.Left == null && top.Right == null)
@@ -257,15 +214,8 @@ namespace ExpressionParse2
 
         }
 
-        private class Tree
-        {
-            public Node Top { get; set; }
-            public Node Right { get; set; }
-        }
-
         class Node
         {
-            public Node Parent;
             public Node Left;
             public Node Right;
             public string Value;
