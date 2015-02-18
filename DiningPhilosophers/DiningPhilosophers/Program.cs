@@ -11,15 +11,19 @@ namespace DiningPhilosophers
     {
         static void Main(string[] args)
         {
-            new Program().Dine(6);
+            Console.WriteLine("How many philosophers do you have?");
+            int numPhilosophers = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter Ctrl-C to exit");
+            Thread.Sleep(300);
+            new Program().Dine(numPhilosophers);
         }
 
         void Dine(int num)
         {
-            Fork[] farks = new Fork[num];
+            Fork[] forks = new Fork[num];
             for (int i = 0; i < num; i++)
             {
-                farks[i] = new Fork(i);
+                forks[i] = new Fork(i);
             }
 
             Person[] persons = new Person[num];
@@ -27,7 +31,7 @@ namespace DiningPhilosophers
             {
                 int l = (i - 1 > 0) ? i - 1 : num - 1;
                 int r = (i + 1 < num) ? i + 1 : 0;
-                persons[i] = new Person(i, farks[l], farks[r]);
+                persons[i] = new Person(i, forks[l], forks[r]);
                 Thread t = new Thread(persons[i].Eat);
                 t.Start();
             }
@@ -60,64 +64,68 @@ namespace DiningPhilosophers
             this.Right = r;
         }
 
+        public bool TakeFork(Fork f)
+        {
+            bool retVal = false;
+
+            Monitor.TryEnter(f, 1, ref retVal);
+
+            if (retVal)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Philosopher {0} took fork {1}", this.Id, f.Id);
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Philosopher {0} couldn't take fork {1}", this.Id, f.Id);
+            }
+
+            return retVal;
+        }
+
+        public void DropFork(Fork f, string reason)
+        {
+            if (Monitor.IsEntered(f))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Philosopher {0} dropped fork {1}, {2}", this.Id, f.Id, reason);
+                Monitor.Exit(f);
+            }
+        }
+
         public void Eat()
         {
             while (true)
             {
-                bool left = false;
-                Monitor.TryEnter(Left, 1, ref left);
+                bool hasLeft = false;
+                bool hasRight = false;
+                hasLeft = TakeFork(Left);
+                hasRight = TakeFork(Right);
                 try
                 {
-                    if (left)
+                    if (hasLeft)
                     {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("Philosopher {0} took fork {1}", this.Id, Left.Id);
-
-                        bool right = false;
-                        Monitor.TryEnter(Right, 1, ref right);
-                        try
+                        if (hasRight)
                         {
-                            if (right)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("Philosopher {0} took fork {1}", this.Id, Right.Id);
-
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("Philosopher {0} ate", this.Id);
-                                Thread.Sleep(500);
-                            }
-                            else
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Philosopher {0} couldn't take fork {1}", this.Id, Right.Id);
-                            }
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Philosopher {0} started eating", this.Id);
+                            Thread.Sleep(1000);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Philosopher {0} is done eating", this.Id);
                         }
-                        finally
+                        else
                         {
-                            if (right)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("Philosopher {0} dropped fork {1}", this.Id, Right.Id);
-                                Monitor.Exit(Right);
-                            }
+                            DropFork(Left, "because he couldnt take right");
                         }
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Philosopher {0} couldn't take fork {1}", this.Id, Left.Id);
                     }
                 }
                 finally
                 {
-                    if (left)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("Philosopher {0} dropped fork {1}", this.Id, Left.Id);
-                        Monitor.Exit(Left);
-                    }
+                    DropFork(Left, "because he is done");
+                    DropFork(Right, "because he is done");
                 }
-                Thread.Sleep(Rand.Next(500,1000));
+                Thread.Sleep(Rand.Next(500, 1000));
             }
         }
     }
