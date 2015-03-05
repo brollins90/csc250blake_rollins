@@ -24,328 +24,135 @@ interface ICallbackContract
     void OnFailure(Failure failures);
 }
 
-
-[ServiceContract(CallbackContract = typeof(ICallbackContract))]
-interface Engine
+class ClientProxy : ICallbackContract, IDisposable
 {
-    [OperationContract]
-    void Subscribe(Failure failures);
+    Engine proxy;
+    Dictionary<Failure, Action> subscribers = new Dictionary<Failure, Action>();
 
-    [OperationContract]
-    void Unsubscribe(Failure failures);
-}
-
-class MyCallbackHandler : ICallbackContract, IDisposable
-{
-    static object baton = new object();
-    static List<Thread> threads = new List<Thread>();
-    static Dictionary<Failure, Action> failActions = new Dictionary<Failure, Action>();
-    static Engine proxy;
-    static Random rand = new Random();
-
-    event Action OnLowAntiFreeze
+    public ClientProxy()
     {
-        add
-        {
-            lock(baton) 
-            {
-                if (failActions.ContainsKey(Failure.LowAntifreeze))
-                {
-                    failActions[Failure.LowAntifreeze] += value;
-                }
-                else
-                {
-                    failActions[Failure.LowAntifreeze] = value;
-                    proxy.Subscribe(Failure.LowAntifreeze);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.LowAntifreeze))
-                {
-                    failActions[Failure.LowAntifreeze] -= value;
-
-                    if (failActions[Failure.LowAntifreeze] == null)
-                    {
-                        failActions.Remove(Failure.LowAntifreeze);
-                        proxy.Unsubscribe(Failure.LowAntifreeze);
-                    }
-                }
-            }
-        }
-    }
-    event Action OnLowOil
-    {
-        add
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.LowOil))
-                {
-                    failActions[Failure.LowOil] += value;
-                }
-                else
-                {
-                    failActions[Failure.LowOil] = value;
-                    proxy.Subscribe(Failure.LowOil);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.LowOil))
-                {
-                    failActions[Failure.LowOil] -= value;
-
-                    if (failActions[Failure.LowOil] == null)
-                    {
-                        failActions.Remove(Failure.LowOil);
-                        proxy.Unsubscribe(Failure.LowOil);
-                    }
-                }
-            }
-        }
-    }
-    event Action OnOverheating
-    {
-        add
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.Overheating))
-                {
-                    failActions[Failure.Overheating] += value;
-                }
-                else
-                {
-                    failActions[Failure.Overheating] = value;
-                    proxy.Subscribe(Failure.Overheating);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.Overheating))
-                {
-                    failActions[Failure.Overheating] -= value;
-
-                    if (failActions[Failure.Overheating] == null)
-                    {
-                        failActions.Remove(Failure.Overheating);
-                        proxy.Unsubscribe(Failure.Overheating);
-                    }
-                }
-            }
-        }
-    }
-    event Action OnBadSparkPlug
-    {
-        add
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.BadSparkPlug))
-                {
-                    failActions[Failure.BadSparkPlug] += value;
-                }
-                else
-                {
-                    failActions[Failure.BadSparkPlug] = value;
-                    proxy.Subscribe(Failure.BadSparkPlug);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.BadSparkPlug))
-                {
-                    failActions[Failure.BadSparkPlug] -= value;
-
-                    if (failActions[Failure.BadSparkPlug] == null)
-                    {
-                        failActions.Remove(Failure.BadSparkPlug);
-                        proxy.Unsubscribe(Failure.BadSparkPlug);
-                    }
-                }
-            }
-        }
-    }
-    event Action OnCarbonBuildup
-    {
-        add
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.CarbonBuildup))
-                {
-                    failActions[Failure.CarbonBuildup] += value;
-                }
-                else
-                {
-                    failActions[Failure.CarbonBuildup] = value;
-                    proxy.Subscribe(Failure.CarbonBuildup);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.CarbonBuildup))
-                {
-                    failActions[Failure.CarbonBuildup] -= value;
-
-                    if (failActions[Failure.CarbonBuildup] == null)
-                    {
-                        failActions.Remove(Failure.CarbonBuildup);
-                        proxy.Unsubscribe(Failure.CarbonBuildup);
-                    }
-                }
-            }
-        }
-    }
-    event Action OnSeized
-    {
-        add
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.Seized))
-                {
-                    failActions[Failure.Seized] += value;
-                }
-                else
-                {
-                    failActions[Failure.Seized] = value;
-                    proxy.Subscribe(Failure.Seized);
-                }
-            }
-        }
-        remove
-        {
-            lock (baton)
-            {
-                if (failActions.ContainsKey(Failure.Seized))
-                {
-                    failActions[Failure.Seized] -= value;
-
-                    if (failActions[Failure.Seized] == null)
-                    {
-                        failActions.Remove(Failure.Seized);
-                        proxy.Unsubscribe(Failure.Seized);
-                    }
-                }
-            }
-        }
-    }
-
-    Action lowAntiFreeze;// = delegate() { Console.WriteLine("LowAntiFreeze"); };
-    Action lowOil;// = delegate() { Console.WriteLine("LowOil"); };
-    Action overheating;// = delegate() { Console.WriteLine("Overheating"); };
-    Action badSparkPlug;// = delegate() { Console.WriteLine("BadSparkPlug"); };
-    Action carbonBuildup;// = delegate() { Console.WriteLine("CarbonBuildup"); };
-    Action seized;// = delegate() { Console.WriteLine("Seized"); };
-        
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Client start");
-        Thread.Sleep(1000);
-
         proxy = DuplexChannelFactory<Engine>.CreateChannel(
-            new MyCallbackHandler(),
+            this,
             new NetTcpBinding(),
             new EndpointAddress("net.tcp://localhost:1234"));
-        Console.WriteLine("Connected");
-
-
-        MyCallbackHandler c = new MyCallbackHandler();
-        for (int i = 0; i < 5; i++)
-        {
-            Thread t = new Thread(c.Run);
-            threads.Add(t);
-            t.Start();
-        }
-        while (true) { }
     }
 
-    public MyCallbackHandler()
+    #region Subscription methods
+    void Subscribe(Failure failure, Action action)
     {
-        lowAntiFreeze = delegate() { Console.WriteLine("LowAntiFreeze"); };
-        lowOil = delegate() { Console.WriteLine("LowOil"); };
-        overheating = delegate() { Console.WriteLine("Overheating"); };
-        badSparkPlug = delegate() { Console.WriteLine("BadSparkPlug"); };
-        carbonBuildup = delegate() { Console.WriteLine("CarbonBuildup"); };
-        seized = delegate() { Console.WriteLine("Seized"); };
-    }
-
-    void Run()
-    {
-        Console.WriteLine("Starting Client");
-        while (true)
+        lock (subscribers)
         {
-            Thread.Sleep(rand.Next(0, 5000) + 5000);
-            if (rand.Next(2) == 1)
+            if (subscribers.ContainsKey(failure))
             {
-                Subscribe((Failure)rand.Next(1, (int)Failure.CarbonBuildup));
+                subscribers[failure] += action;
             }
             else
             {
-                Unsubscribe((Failure)rand.Next(1, (int)Failure.CarbonBuildup));
+                subscribers.Add(failure, action);
+                ThreadPool.QueueUserWorkItem(s => proxy.Subscribe(failure));
             }
         }
     }
 
-    void Subscribe(Failure failure)
+    void Unsubscribe(Failure failure, Action action)
     {
-        Console.WriteLine("sub: " + failure);
-        
-        if ((failure & Failure.LowAntifreeze) != 0)
-            OnLowAntiFreeze += lowAntiFreeze;
-        if ((failure & Failure.LowOil) != 0)
-            OnLowOil += lowOil;
-        if ((failure & Failure.Overheating) != 0)
-            OnOverheating += overheating;
-        if ((failure & Failure.BadSparkPlug) != 0)
-            OnBadSparkPlug += badSparkPlug;
-        if ((failure & Failure.CarbonBuildup) != 0)
-            OnCarbonBuildup += carbonBuildup;
-        if ((failure & Failure.Seized) != 0)
-            OnSeized += seized;
+        lock (subscribers)
+        {
+            if (subscribers.ContainsKey(failure))
+            {
+                subscribers[failure] -= action;
+
+                if (subscribers[failure] == null)
+                {
+                    ThreadPool.QueueUserWorkItem(s => proxy.Unsubscribe(failure));
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Events
+    public event Action LowAntifreeze
+    {
+        add
+        {
+            Subscribe(Failure.LowAntifreeze, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.LowAntifreeze, value);
+        }
     }
 
-    void Unsubscribe(Failure failure)
-    {
-
-        Console.WriteLine("unsub: " + failure);
-        
-        if ((failure & Failure.LowAntifreeze) != 0)
-            OnLowAntiFreeze -= lowAntiFreeze;
-        if ((failure & Failure.LowOil) != 0)
-            OnLowOil -= lowOil;
-        if ((failure & Failure.Overheating) != 0)
-            OnOverheating -= overheating;
-        if ((failure & Failure.BadSparkPlug) != 0)
-            OnBadSparkPlug -= badSparkPlug;
-        if ((failure & Failure.CarbonBuildup) != 0)
-            OnCarbonBuildup -= carbonBuildup;
-        if ((failure & Failure.Seized) != 0)
-            OnSeized -= seized;
+    public event Action LowOil
+    { 
+        add 
+        {
+            Subscribe(Failure.LowOil, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.LowOil, value);
+        }
     }
+
+    public event Action Overheating
+    {
+        add
+        {
+            Subscribe(Failure.Overheating, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.Overheating, value);
+        }
+    }
+
+    public event Action BadSparkPlug
+    {
+        add
+        {
+            Subscribe(Failure.BadSparkPlug, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.BadSparkPlug, value);
+        }
+    }
+
+    public event Action CarbonBuildup
+    {
+        add
+        {
+            Subscribe(Failure.CarbonBuildup, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.CarbonBuildup, value);
+        }
+    }
+
+    public event Action Seized
+    {
+        add
+        {
+            Subscribe(Failure.Seized, value);
+        }
+        remove
+        {
+            Unsubscribe(Failure.Seized, value);
+        }
+    }
+
+    #endregion
+
+    #region Interface methods
     void ICallbackContract.OnFailure(Failure failures)
     {
         Dictionary<Failure, Action> subs;
-        lock (baton)
+        lock (subscribers)
         {
-            subs = new Dictionary<Failure, Action>(failActions);
+            subs = new Dictionary<Failure, Action>(subscribers);
         }
         foreach (var sub in subs)
         {
@@ -359,17 +166,114 @@ class MyCallbackHandler : ICallbackContract, IDisposable
         }
     }
 
-
     public void Dispose()
     {
-        proxy.Unsubscribe(Failure.Max);
-        ((IClientChannel)proxy).Close();
-        foreach (var t in threads)
-        {
-            t.Abort();
-        }
-        failActions = null;
-        baton = null;
+        ((IClientChannel)proxy).Dispose();
     }
+    #endregion
 }
 
+[ServiceContract(CallbackContract = typeof(ICallbackContract))]
+interface Engine
+{
+    [OperationContract]
+    void Subscribe(Failure failures);
+
+    [OperationContract]
+    void Unsubscribe(Failure failures);
+}
+
+class Client
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Client");
+        Thread.Sleep(1000);
+
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    TestThing tt = new TestThing();
+        //    Thread t = new Thread(new ThreadStart(tt.Run));
+        //    t.Start();
+        //}
+        var handler = new ClientProxy();
+        
+        handler.LowOil += () => Console.WriteLine("Oil is low");
+        Console.Read();
+        //handler.LowAntifreeze += () => Console.WriteLine("LowAntifreeze");
+
+        //var handler2 = new MyCallbackHandler();
+        //handler2.LowAntifreeze += () => Console.WriteLine("LowAntifreeze number two");
+    }
+    
+}
+
+#region Test stuff
+class TestThing
+{
+    ClientProxy p = new ClientProxy();
+
+    Random rand = new Random();
+    Action lowAntiFreeze = delegate() { Console.WriteLine("LowAntiFreeze"); };
+    Action lowOil = delegate() { Console.WriteLine("LowOil"); };
+    Action overheating = delegate() { Console.WriteLine("Overheating"); };
+    Action badSparkPlug = delegate() { Console.WriteLine("BadSparkPlug"); };
+    Action carbonBuildup = delegate() { Console.WriteLine("CarbonBuildup"); };
+    Action seized = delegate() { Console.WriteLine("Seized"); };
+    
+    public void Run()
+    {
+        Console.WriteLine("Starting Client");
+        while (true)
+        {
+            Thread.Sleep(rand.Next(0, 5000) + 5000);
+            if (rand.Next(2) == 1)
+            {
+                SubscribeTest((Failure)rand.Next(1, (int)Failure.CarbonBuildup));
+            }
+            else
+            {
+                UnsubscribeTest((Failure)rand.Next(1, (int)Failure.CarbonBuildup));
+            }
+        }
+    }
+
+
+    void SubscribeTest(Failure failure)
+    {
+        Console.WriteLine("sub: " + failure);
+
+        if ((failure & Failure.LowAntifreeze) != 0)
+            p.LowAntifreeze += lowAntiFreeze;
+        if ((failure & Failure.LowOil) != 0)
+            p.LowOil += lowOil;
+        if ((failure & Failure.Overheating) != 0)
+            p.Overheating += overheating;
+        if ((failure & Failure.BadSparkPlug) != 0)
+            p.BadSparkPlug += badSparkPlug;
+        if ((failure & Failure.CarbonBuildup) != 0)
+            p.CarbonBuildup += carbonBuildup;
+        if ((failure & Failure.Seized) != 0)
+            p.Seized += seized;
+    }
+
+    void UnsubscribeTest(Failure failure)
+    {
+
+        Console.WriteLine("unsub: " + failure);
+
+        if ((failure & Failure.LowAntifreeze) != 0)
+            p.LowAntifreeze -= lowAntiFreeze;
+        if ((failure & Failure.LowOil) != 0)
+            p.LowOil -= lowOil;
+        if ((failure & Failure.Overheating) != 0)
+            p.Overheating -= overheating;
+        if ((failure & Failure.BadSparkPlug) != 0)
+            p.BadSparkPlug -= badSparkPlug;
+        if ((failure & Failure.CarbonBuildup) != 0)
+            p.CarbonBuildup -= carbonBuildup;
+        if ((failure & Failure.Seized) != 0)
+            p.Seized -= seized;
+    }
+}
+#endregion
