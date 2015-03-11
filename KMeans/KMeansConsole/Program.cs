@@ -11,16 +11,16 @@ namespace KMeansConsole
     {
         static void Main(string[] args)
         {
-            KMeaner meaner = KMeaner.RandomKMeaner(4,20);
+            KMeaner meaner = KMeaner.RandomKMeaner(20, 4);
 
-            //meaner.KMeanCluster();
+            meaner.KMeanCluster();
 
-            while (meaner.IsStillMoving)
-            {
-                meaner.StepOnce();
-                meaner.Print();
-                Console.ReadKey();
-            }
+            //while (meaner.IsStillMoving)
+            //{
+            //    meaner.StepOnce();
+            //    meaner.Print();
+            //    Console.ReadKey();
+            //}
 
             meaner.Print();
 
