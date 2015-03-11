@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingContest4a", "CodingContest4a\CodingContest4a.csproj", "{C063FB7D-252E-43DC-A50A-524A2D036023}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingContest4b", "CodingContest4b\CodingContest4b.csproj", "{C5AB19C0-6249-4000-B181-27C167E09E07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C063FB7D-252E-43DC-A50A-524A2D036023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C063FB7D-252E-43DC-A50A-524A2D036023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C063FB7D-252E-43DC-A50A-524A2D036023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C063FB7D-252E-43DC-A50A-524A2D036023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5AB19C0-6249-4000-B181-27C167E09E07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5AB19C0-6249-4000-B181-27C167E09E07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5AB19C0-6249-4000-B181-27C167E09E07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5AB19C0-6249-4000-B181-27C167E09E07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

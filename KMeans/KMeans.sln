@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMeans", "KMeans\KMeans.csproj", "{EE3A3283-2745-44BF-A61C-B027FD2097F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMeansLib", "KMeansLib\KMeansLib.csproj", "{5981780E-689B-406B-8245-ADDACBA8B644}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMeansConsole", "KMeansConsole\KMeansConsole.csproj", "{B14F262C-D73A-4726-B8CE-4CD906D6EE1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE3A3283-2745-44BF-A61C-B027FD2097F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE3A3283-2745-44BF-A61C-B027FD2097F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE3A3283-2745-44BF-A61C-B027FD2097F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE3A3283-2745-44BF-A61C-B027FD2097F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5981780E-689B-406B-8245-ADDACBA8B644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5981780E-689B-406B-8245-ADDACBA8B644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5981780E-689B-406B-8245-ADDACBA8B644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5981780E-689B-406B-8245-ADDACBA8B644}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B14F262C-D73A-4726-B8CE-4CD906D6EE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B14F262C-D73A-4726-B8CE-4CD906D6EE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B14F262C-D73A-4726-B8CE-4CD906D6EE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B14F262C-D73A-4726-B8CE-4CD906D6EE1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
