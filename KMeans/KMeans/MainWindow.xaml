@@ -4,104 +4,213 @@
         xmlns:kMeansLib="clr-namespace:KMeansLib;assembly=KMeansLib"
         Title="MainWindow" Height="500" Width="525">
     <StackPanel>
-        <Button Content="Step Once" Click="Button_Click"/>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Num Samples"/>
+            <TextBox Text="{Binding NumSamples}"/>
+            <Label Content="  Num Clusters"/>
+            <TextBox Text="{Binding NumClusters}"/>
+        </StackPanel>
+        <Button Content="Create New" Click="CreateNew"/>
+        <Button Content="Step Once" Click="StepOne"/>
         <Grid>
-        <ItemsControl x:Name="graph1" ItemsSource="{Binding Meaner.DataSet}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="kMeansLib:Data">
-                    <Path>
-                        <Path.Data>
-                            <EllipseGeometry RadiusX="1" RadiusY="1">
-                                <EllipseGeometry.Transform>
-                                    <TranslateTransform x:Name="trans" X="{Binding X}" Y="{Binding Y}"/>
-                                </EllipseGeometry.Transform>
-                            </EllipseGeometry>
-                        </Path.Data>
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Setter Property="Fill" Value="Red"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="1">
-                                        <Setter Property="Fill" Value="Green"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="2">
-                                        <Setter Property="Fill" Value="Blue"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="3">
-                                        <Setter Property="Fill" Value="Purple"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                        <Path.ToolTip>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="(X="/>
-                                <TextBlock Text="{Binding X}"/>
-                                <TextBlock Text=", Y="/>
-                                <TextBlock Text="{Binding Y}"/>
-                                <TextBlock Text=")"/>
-                            </StackPanel>
-                        </Path.ToolTip>
-                    </Path>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
+            <ItemsControl x:Name="graph1" ItemsSource="{Binding Meaner.DataSet}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="kMeansLib:Data" x:Name="graph1dt">
+                        <Path>
+                            <Path.Data>
+                                <EllipseGeometry RadiusX="1" RadiusY="1">
+                                    <EllipseGeometry.Transform>
+                                        <TranslateTransform x:Name="trans" X="{Binding X}" Y="{Binding Y}"/>
+                                    </EllipseGeometry.Transform>
+                                </EllipseGeometry>
+                            </Path.Data>
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Fill" Value="#FF0000"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="1">
+                                            <Setter Property="Fill" Value="#00FF00"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="2">
+                                            <Setter Property="Fill" Value="#0000FF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="3">
+                                            <Setter Property="Fill" Value="#FFFF00"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="4">
+                                            <Setter Property="Fill" Value="#FF00FF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="5">
+                                            <Setter Property="Fill" Value="#00FFFF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="6">
+                                            <Setter Property="Fill" Value="#000000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="7">
+                                            <Setter Property="Fill" Value="#800000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="8">
+                                            <Setter Property="Fill" Value="#008000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="9">
+                                            <Setter Property="Fill" Value="#000080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="10">
+                                            <Setter Property="Fill" Value="#808000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="11">
+                                            <Setter Property="Fill" Value="#800080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="12">
+                                            <Setter Property="Fill" Value="#008080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="13">
+                                            <Setter Property="Fill" Value="#808080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="14">
+                                            <Setter Property="Fill" Value="#C00000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="15">
+                                            <Setter Property="Fill" Value="#00C000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="16">
+                                            <Setter Property="Fill" Value="#0000C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="17">
+                                            <Setter Property="Fill" Value="#C0C000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="18">
+                                            <Setter Property="Fill" Value="#C000C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="19">
+                                            <Setter Property="Fill" Value="#00C0C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="20">
+                                            <Setter Property="Fill" Value="#C0C0C0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                            <Path.ToolTip>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="(X="/>
+                                    <TextBlock Text="{Binding X}"/>
+                                    <TextBlock Text=", Y="/>
+                                    <TextBlock Text="{Binding Y}"/>
+                                    <TextBlock Text=")"/>
+                                </StackPanel>
+                            </Path.ToolTip>
+                        </Path>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid Background="Transparent"
-                          LayoutTransform="10 0 0 10 0 0"
-                          IsItemsHost="True"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-        <ItemsControl x:Name="graph2" ItemsSource="{Binding Meaner.Centroids}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="kMeansLib:Data">
-                    <Path>
-                        <Path.Data>
-                            <EllipseGeometry RadiusX="2" RadiusY="2">
-                                <EllipseGeometry.Transform>
-                                    <TranslateTransform x:Name="trans" X="{Binding X}" Y="{Binding Y}"/>
-                                </EllipseGeometry.Transform>
-                            </EllipseGeometry>
-                        </Path.Data>
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Setter Property="Fill" Value="Red"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="1">
-                                        <Setter Property="Fill" Value="Green"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="2">
-                                        <Setter Property="Fill" Value="Blue"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Cluster}" Value="3">
-                                        <Setter Property="Fill" Value="Purple"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                        <Path.ToolTip>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="(X="/>
-                                <TextBlock Text="{Binding X}"/>
-                                <TextBlock Text=", Y="/>
-                                <TextBlock Text="{Binding Y}"/>
-                                <TextBlock Text=")"/>
-                            </StackPanel>
-                        </Path.ToolTip>
-                    </Path>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
                         <Grid Background="Transparent"
                           LayoutTransform="10 0 0 10 0 0"
                           IsItemsHost="True"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <ItemsControl x:Name="graph2" ItemsSource="{Binding Meaner.Centroids}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="kMeansLib:Data" x:Name="graph2dt">
+                        <Path>
+                            <Path.Data>
+                                <EllipseGeometry RadiusX="2" RadiusY="2">
+                                    <EllipseGeometry.Transform>
+                                        <TranslateTransform x:Name="trans" X="{Binding X}" Y="{Binding Y}"/>
+                                    </EllipseGeometry.Transform>
+                                </EllipseGeometry>
+                            </Path.Data>
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Fill" Value="#FF0000"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="1">
+                                            <Setter Property="Fill" Value="#00FF00"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="2">
+                                            <Setter Property="Fill" Value="#0000FF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="3">
+                                            <Setter Property="Fill" Value="#FFFF00"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="4">
+                                            <Setter Property="Fill" Value="#FF00FF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="5">
+                                            <Setter Property="Fill" Value="#00FFFF"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="6">
+                                            <Setter Property="Fill" Value="#000000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="7">
+                                            <Setter Property="Fill" Value="#800000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="8">
+                                            <Setter Property="Fill" Value="#008000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="9">
+                                            <Setter Property="Fill" Value="#000080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="10">
+                                            <Setter Property="Fill" Value="#808000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="11">
+                                            <Setter Property="Fill" Value="#800080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="12">
+                                            <Setter Property="Fill" Value="#008080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="13">
+                                            <Setter Property="Fill" Value="#808080"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="14">
+                                            <Setter Property="Fill" Value="#C00000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="15">
+                                            <Setter Property="Fill" Value="#00C000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="16">
+                                            <Setter Property="Fill" Value="#0000C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="17">
+                                            <Setter Property="Fill" Value="#C0C000"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="18">
+                                            <Setter Property="Fill" Value="#C000C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="19">
+                                            <Setter Property="Fill" Value="#00C0C0"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Cluster}" Value="20">
+                                            <Setter Property="Fill" Value="#C0C0C0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                            <Path.ToolTip>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="(X="/>
+                                    <TextBlock Text="{Binding X}"/>
+                                    <TextBlock Text=", Y="/>
+                                    <TextBlock Text="{Binding Y}"/>
+                                    <TextBlock Text=")"/>
+                                </StackPanel>
+                            </Path.ToolTip>
+                        </Path>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid Background="Transparent"
+                          LayoutTransform="10 0 0 10 0 0"
+                          IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </Grid>
     </StackPanel>
 </Window>

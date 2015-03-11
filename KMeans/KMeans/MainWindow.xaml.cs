@@ -25,30 +25,35 @@ namespace KMeans
     public partial class MainWindow : Window
     {
         public KMeaner Meaner { get; set; }
+        public int NumSamples { get; set; }
+        public int NumClusters { get; set; }
+
  
         public MainWindow()
         {
+            NumSamples = 50;
+            NumClusters = 6;
             DataContext = this;
-            Meaner = KMeaner.RandomKMeaner(20, 4);
-            Meaner.StepOnce();
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void CreateNew(object sender, RoutedEventArgs e)
+        {
+            Meaner = KMeaner.RandomKMeaner(NumSamples, NumClusters);
+            Meaner.StepOnce();
+            graph1.ItemsSource = null;
+            graph1.ItemsSource = Meaner.DataSet;
+            graph2.ItemsSource = null;
+            graph2.ItemsSource = Meaner.Centroids;
+        }
+
+        private void StepOne(object sender, RoutedEventArgs e)
         {
             Meaner.StepOnce();
             graph1.ItemsSource = null;
             graph1.ItemsSource = Meaner.DataSet;
             graph2.ItemsSource = null;
             graph2.ItemsSource = Meaner.Centroids;
-            //foreach (var i in Meaner.DataSet)
-            //{
-            //    var properties = typeof (Data).GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            //    foreach (var property in properties)
-            //    {
-            //        i.OnPropertyChanged(new PropertyChangedEventArgs(property.Name));
-            //    }
-            //}
         }
     }
 }
