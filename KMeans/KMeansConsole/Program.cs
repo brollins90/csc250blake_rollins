@@ -13,7 +13,14 @@ namespace KMeansConsole
         {
             KMeaner meaner = KMeaner.RandomKMeaner(4,20);
 
-            KMeansProcess.KMeanCluster(meaner);
+            //meaner.KMeanCluster();
+
+            while (meaner.IsStillMoving)
+            {
+                meaner.StepOnce();
+                meaner.Print();
+                Console.ReadKey();
+            }
 
             meaner.Print();
 

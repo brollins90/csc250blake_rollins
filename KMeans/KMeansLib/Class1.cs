@@ -14,13 +14,16 @@ namespace KMeansLib
         public List<Data> Centroids { get; set; }
         public List<Data> Samples { get; set; }
         public int NumClusters { get; set; }
+        private int _atStep = 0;
+        public bool IsStillMoving { get; private set; }
 
-        public KMeaner(int numClusters = 4)
+        private KMeaner(int numClusters = 4)
         {
             DataSet = new List<Data>();
             Centroids = new List<Data>();
             Samples = new List<Data>();
             NumClusters = numClusters;
+            IsStillMoving = true;
         }
 
         public static KMeaner RandomKMeaner(int numClusters, int numSamples, int xmin = -20, int xmax = 20, int ymin = -20, int ymax = 20)
@@ -39,8 +42,6 @@ namespace KMeansLib
             for (int i = 0; i < numClusters; i++)
             {
                 retVal.Centroids.Add(retVal.Samples[i]);
-                //centroids.Add(new Centroid(1.0, 1.0)); // lowest set
-                //centroids.Add(new Centroid(5.0, 7.0)); // highest set
             }
 
             return retVal;
@@ -71,6 +72,204 @@ namespace KMeansLib
             }
             Console.WriteLine();
         }
+
+        public void KMeanCluster()
+        {
+            double bigNumber = Math.Pow(10, 10); // some big number that's sure to be larger than our data range.
+            double minimum = bigNumber;
+            int sampleNumber = 0;
+            int cluster = 0;
+            bool isStillMoving = true;
+            int TOTAL_DATA = this.Samples.Count;
+
+            // Add in new data, one at a time recalculating the centroid each time
+            while (this.DataSet.Count() < TOTAL_DATA)
+            {
+                Data newData = new Data(this.Samples[sampleNumber]);
+                this.DataSet.Add(newData);
+                minimum = bigNumber;
+                for (int i = 0; i < this.NumClusters; i++)
+                {
+                    double totalX = 0;
+                    double totalY = 0;
+                    double totalInCluster = 0;
+                    for (int j = 0; j < this.DataSet.Count(); j++)
+                    {
+                        if (this.DataSet[j].Cluster == i)
+                        {
+                            totalX += this.DataSet[j].X;
+                            totalY += this.DataSet[j].Y;
+                            totalInCluster++;
+                        }
+                    }
+                    if (totalInCluster > 0)
+                    {
+                        this.Centroids[i].X = (totalX / totalInCluster);
+                        this.Centroids[i].Y = (totalY / totalInCluster);
+                    }
+                }
+                sampleNumber++;
+            }
+
+            // Now, keep shifting centroids until equilibreum occurs
+            while (isStillMoving)
+            {
+                // calculate the new centroids
+                for (int i = 0; i < this.NumClusters; i++)
+                {
+                    double totalX = 0;
+                    double totalY = 0;
+                    double totalInCluster = 0;
+                    for (int j = 0; j < this.DataSet.Count(); j++)
+                    {
+                        if (this.DataSet[j].Cluster == i)
+                        {
+                            totalX += this.DataSet[j].X;
+                            totalY += this.DataSet[j].Y;
+                            totalInCluster++;
+                        }
+                    }
+                    if (totalInCluster > 0)
+                    {
+                        this.Centroids[i].X = (totalX / totalInCluster);
+                        this.Centroids[i].Y = (totalY / totalInCluster);
+                    }
+                }
+
+                // assign all data to the new centroids
+                isStillMoving = false;
+
+                for (int i = 0; i < this.DataSet.Count(); i++)
+                {
+                    Data tempdata = this.DataSet[i];
+                    minimum = bigNumber;
+                    for (int j = 0; j < this.NumClusters; j++)
+                    {
+                        double distance = FindDistance(tempdata, this.Centroids[j]);
+                        if (distance < minimum)
+                        {
+                            minimum = distance;
+                            cluster = j;
+                        }
+                    }
+                    //tempdata.Cluster = cluster;
+                    if (tempdata.Cluster != cluster)
+                    {
+                        tempdata.Cluster = cluster;
+                        isStillMoving = true;
+                    }
+                }
+            }
+            return;
+        }
+
+
+        public void StepOnce()
+        {
+            //
+            //
+            //int cluster = 0;
+            //bool isStillMoving = true;
+            //int TOTAL_DATA = this.Samples.Count;
+
+            if (_atStep < 1)
+            {
+                const double bigNumber = double.MaxValue;
+                double minimum = bigNumber;
+                int sampleNumber = 0;
+                // Add in new data, one at a time recalculating the centroid each time
+                while (this.DataSet.Count() < this.Samples.Count)
+                {
+                    Data newData = new Data(this.Samples[sampleNumber]);
+                    this.DataSet.Add(newData);
+                    minimum = bigNumber;
+                    for (int i = 0; i < this.NumClusters; i++)
+                    {
+                        double totalX = 0;
+                        double totalY = 0;
+                        double totalInCluster = 0;
+                        for (int j = 0; j < this.DataSet.Count(); j++)
+                        {
+                            if (this.DataSet[j].Cluster == i)
+                            {
+                                totalX += this.DataSet[j].X;
+                                totalY += this.DataSet[j].Y;
+                                totalInCluster++;
+                            }
+                        }
+                        if (totalInCluster > 0)
+                        {
+                            this.Centroids[i].X = (totalX/totalInCluster);
+                            this.Centroids[i].Y = (totalY/totalInCluster);
+                        }
+                    }
+                    sampleNumber++;
+                }
+            }
+            else // not step 1
+            {
+                const double bigNumber = double.MaxValue;
+                double minimum = bigNumber;
+                int cluster = 0;
+                // Now, keep shifting centroids until equilibreum occurs
+                if (IsStillMoving)
+                {
+                    // calculate the new centroids
+                    for (int i = 0; i < this.NumClusters; i++)
+                    {
+                        double totalX = 0;
+                        double totalY = 0;
+                        double totalInCluster = 0;
+                        for (int j = 0; j < this.DataSet.Count(); j++)
+                        {
+                            if (this.DataSet[j].Cluster == i)
+                            {
+                                totalX += this.DataSet[j].X;
+                                totalY += this.DataSet[j].Y;
+                                totalInCluster++;
+                            }
+                        }
+                        if (totalInCluster > 0)
+                        {
+                            this.Centroids[i].X = (totalX / totalInCluster);
+                            this.Centroids[i].Y = (totalY / totalInCluster);
+                        }
+                    }
+
+                    // assign all data to the new centroids
+                    IsStillMoving = false;
+
+                    for (int i = 0; i < this.DataSet.Count(); i++)
+                    {
+                        Data tempdata = this.DataSet[i];
+                        minimum = bigNumber;
+                        for (int j = 0; j < this.NumClusters; j++)
+                        {
+                            double distance = FindDistance(tempdata, this.Centroids[j]);
+                            if (distance < minimum)
+                            {
+                                minimum = distance;
+                                cluster = j;
+                            }
+                        }
+                        //tempdata.Cluster = cluster;
+                        if (tempdata.Cluster != cluster)
+                        {
+                            tempdata.Cluster = cluster;
+                            IsStillMoving = true;
+                        }
+                    }
+                }
+            }
+
+            _atStep++;
+        }
+
+
+        private static double FindDistance(Data data, Data centroid)
+        {
+            return Math.Sqrt(Math.Pow((centroid.Y - data.Y), 2) + Math.Pow((centroid.X - data.X), 2));
+        }
     }
 
     public class Data
@@ -98,101 +297,6 @@ namespace KMeansLib
         }
     }
 
-    public static class KMeansProcess
-    {
-        public static void KMeanCluster(KMeaner meaner)
-        {
-            double bigNumber = Math.Pow(10, 10); // some big number that's sure to be larger than our data range.
-            double minimum = bigNumber;
-            int sampleNumber = 0;
-            int cluster = 0;
-            bool isStillMoving = true;
-            int TOTAL_DATA = meaner.Samples.Count;
 
-            // Add in new data, one at a time recalculating the centroid each time
-            while (meaner.DataSet.Count() < TOTAL_DATA)
-            {
-                Data newData = new Data(meaner.Samples[sampleNumber]);
-                meaner.DataSet.Add(newData);
-                minimum = bigNumber;
-                for (int i = 0; i < meaner.NumClusters; i++)
-                {
-                    double totalX = 0;
-                    double totalY = 0;
-                    double totalInCluster = 0;
-                    for (int j = 0; j < meaner.DataSet.Count(); j++)
-                    {
-                        if (meaner.DataSet[j].Cluster == i)
-                        {
-                            totalX += meaner.DataSet[j].X;
-                            totalY += meaner.DataSet[j].Y;
-                            totalInCluster++;
-                        }
-                    }
-                    if (totalInCluster > 0)
-                    {
-                        meaner.Centroids[i].X = (totalX/totalInCluster);
-                        meaner.Centroids[i].Y = (totalY / totalInCluster);
-                    }
-                }
-                sampleNumber++;
-            }
-
-            // Now, keep shifting centroids until equilibreum occurs
-            while (isStillMoving)
-            {
-                // calculate the new centroids
-                for (int i = 0; i < meaner.NumClusters; i++)
-                {
-                    double totalX = 0;
-                    double totalY = 0;
-                    double totalInCluster = 0;
-                    for (int j = 0; j < meaner.DataSet.Count(); j++)
-                    {
-                        if (meaner.DataSet[j].Cluster == i)
-                        {
-                            totalX += meaner.DataSet[j].X;
-                            totalY += meaner.DataSet[j].Y;
-                            totalInCluster++;
-                        }
-                    }
-                    if (totalInCluster > 0)
-                    {
-                        meaner.Centroids[i].X = (totalX / totalInCluster);
-                        meaner.Centroids[i].Y = (totalY / totalInCluster);
-                    }
-                }
-
-                // assign all data to the new centroids
-                isStillMoving = false;
-
-                for (int i = 0; i < meaner.DataSet.Count(); i++)
-                {
-                    Data tempdata = meaner.DataSet[i];
-                    minimum = bigNumber;
-                    for (int j = 0; j < meaner.NumClusters; j++)
-                    {
-                        double distance = FindDistance(tempdata, meaner.Centroids[j]);
-                        if (distance < minimum)
-                        {
-                            minimum = distance;
-                            cluster = j;
-                        }
-                    }
-                    //tempdata.Cluster = cluster;
-                    if (tempdata.Cluster != cluster)
-                    {
-                        tempdata.Cluster = cluster;
-                        isStillMoving = true;
-                    }
-                }
-            }
-            return;
-        }
-
-        private static double FindDistance(Data data, Data centroid)
-        {
-            return Math.Sqrt(Math.Pow((centroid.Y - data.Y), 2) + Math.Pow((centroid.X - data.X), 2));
-        }
-    }
+    
 }
